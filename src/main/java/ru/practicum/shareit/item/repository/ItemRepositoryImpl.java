@@ -40,7 +40,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     public List<Item> getItemsByText(String text) {
         List<Item> list = new ArrayList<>();
         for (Item item : items.values()) {
-            if (item.isAvailable()) {
+            if (item.getAvailable()) {
                 if (item.getName().toLowerCase().contains(text.toLowerCase()) ||
                         item.getDescription().toLowerCase().contains(text.toLowerCase())) {
                     list.add(item);

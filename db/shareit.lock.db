@@ -1,0 +1,6 @@
+#FileLock
+#Sun Jun 25 15:28:09 UTC 2023
+hostName=mbp-aleksej
+id=188f32b62e26c7fb60da492b95d6d3b169a1633fe8e
+method=file
+server=192.168.1.6\:51629

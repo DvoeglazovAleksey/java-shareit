@@ -28,7 +28,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> getItemsByUserId(long userId) {
-        userRepository.findUserById(userId);
+        userRepository.findById(userId);
         return itemRepository.getItemsByUserId(userId).stream()
                 .map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
@@ -55,7 +55,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void validItemAndUserInAddItem(long userId, ItemDto itemDto) {
-        userRepository.findUserById(userId);
+        userRepository.findById(userId);
         if (itemDto.getName().isEmpty()) {
             throw new ValidationException("Name in addItem");
         } else if (itemDto.getDescription() == null) {
@@ -66,7 +66,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private Item validItemAndUserInUpdate(long userId, long itemId, ItemDto itemDto) {
-        userRepository.findUserById(userId);
+        userRepository.findById(userId);
         Item item = itemRepository.getItemById(itemId);
         User owner = item.getOwner();
         if (owner.getId() != userId) {
