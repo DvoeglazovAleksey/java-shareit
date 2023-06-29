@@ -13,7 +13,7 @@ import javax.validation.constraints.Size;
 public class ItemDto {
     private Long id;
     private String name;
-    @Size(max = 50, message = "Длина описания должна быть до 50 символов")
+    @Size(max = 250, message = "Длина описания должна быть до 250 символов")
     private String description;
     private Boolean available;
     private Long requestId;

@@ -23,9 +23,11 @@ public class ItemMapper {
         item.setName(itemDto.getName());
         item.setDescription(itemDto.getDescription());
         item.setAvailable(itemDto.getAvailable());
-        ItemRequest itemRequest = new ItemRequest();
-        itemRequest.setId(itemDto.getRequestId() != null ? itemDto.getRequestId() : null);
-        item.setRequest(itemRequest);
+        if(itemDto.getRequestId() != null) {
+            ItemRequest itemRequest = new ItemRequest();
+            itemRequest.setId(itemDto.getRequestId());
+            item.setRequest(itemRequest);
+        }
         return item;
     }
 }

@@ -1,8 +1,7 @@
 package ru.practicum.shareit.request;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
@@ -13,6 +12,9 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = "requests", schema = "public")
@@ -24,4 +26,5 @@ public class ItemRequest {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requestor_id")
     User requestor;
+    LocalDateTime created;
 }

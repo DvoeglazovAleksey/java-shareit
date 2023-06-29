@@ -1,5 +1,6 @@
 package ru.practicum.shareit.user.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EmailException;
 import ru.practicum.shareit.exception.NotFoundException;
@@ -13,14 +14,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-
-    public UserServiceImpl(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
-
 
     @Override
     public List<UserDto> findAllUsersDto() {
@@ -30,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto findUserDtoById(long id) {
         User user = userRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Пользователь не найден в findUserDtoById(long id)"));
+                new NotFoundException("Пользователь с id = %s не зарегестрирован", String.valueOf(id)));
         return UserMapper.toUserDto(user);
     }
 
@@ -40,14 +37,14 @@ public class UserServiceImpl implements UserService {
 //        if (userRepository.isEmailPresentInRepository(UserMapper.toUser(userDto))) {
 //            throw new EmailException(userDto.getEmail());
 //        } else {
-            return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
+        return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
         //}
     }
 
     @Override
     public UserDto updateUserDto(long id, UserDto userDto) {
         User user = userRepository.findById(id).orElseThrow(() ->
-        new NotFoundException("Пользователь не найден в updateUserDto(long id, UserDto userDto)"));
+                new NotFoundException("Пользователь с id = %s не зарегестрирован", String.valueOf(id)));
         if (userDto.getName() != null) {
             if (userDto.getName().isBlank()) {
                 throw new ValidationException("Name не может быть пустым");

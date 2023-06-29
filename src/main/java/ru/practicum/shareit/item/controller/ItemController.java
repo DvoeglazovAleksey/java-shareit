@@ -1,5 +1,6 @@
 package ru.practicum.shareit.item.controller;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,13 +15,13 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/items")
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Validated
 public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("{itemId}")
-    public ItemDto getItemsByUserIdById(@PathVariable long itemId) {
+    public ItemDto getItemById(@PathVariable long itemId) {
         return itemService.getItemById(itemId);
     }
 
