@@ -10,12 +10,9 @@ import java.time.LocalDateTime;
 /**
  * TODO Sprint add-item-requests.
  */
-@Getter
-@Setter
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @Entity
 @Table(name = "requests", schema = "public")
 public class ItemRequest {

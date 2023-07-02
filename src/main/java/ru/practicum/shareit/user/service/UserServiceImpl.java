@@ -1,23 +1,24 @@
 package ru.practicum.shareit.user.service;
 
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EmailException;
-import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.user.UserMapper;
 import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.mappers.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repositoty.UserRepository;
+import ru.practicum.shareit.validation.Valid;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
+    private final Valid valid;
 
     @Override
     public List<UserDto> findAllUsersDto() {
@@ -25,26 +26,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto findUserDtoById(long id) {
-        User user = userRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Пользователь с id = %s не зарегестрирован", String.valueOf(id)));
+    public UserDto findUserById(long id) {
+        User user = valid.checkUser(id);
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public UserDto addUserDto(UserDto userDto) {
         validUser(userDto);
-//        if (userRepository.isEmailPresentInRepository(UserMapper.toUser(userDto))) {
-//            throw new EmailException(userDto.getEmail());
-//        } else {
         return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
-        //}
     }
 
     @Override
     public UserDto updateUserDto(long id, UserDto userDto) {
-        User user = userRepository.findById(id).orElseThrow(() ->
-                new NotFoundException("Пользователь с id = %s не зарегестрирован", String.valueOf(id)));
+        User user = valid.checkUser(id);
         if (userDto.getName() != null) {
             if (userDto.getName().isBlank()) {
                 throw new ValidationException("Name не может быть пустым");
@@ -60,7 +55,6 @@ public class UserServiceImpl implements UserService {
             }
             user.setEmail(userDto.getEmail());
         }
-
         return UserMapper.toUserDto(userRepository.save(user));
     }
 

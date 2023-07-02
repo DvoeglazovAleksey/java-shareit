@@ -8,17 +8,16 @@ import javax.persistence.*;
  * TODO Sprint add-controllers.
  */
 @Data
+@ToString
 @Builder
 @Entity
 @Table(name = "users", schema = "public")
-@Getter @Setter
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;
-
 }
