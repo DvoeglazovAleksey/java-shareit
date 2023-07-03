@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.repository;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
@@ -10,29 +11,29 @@ import java.util.List;
 
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    List<Booking> findAllByBookerIdOrderByStartDesc(long userId);
+    List<Booking> findAllByBookerId(long userId, Sort sort);
 
-    List<Booking> findAllByItem_OwnerIdOrderByStartDesc(long userId);
+    List<Booking> findAllByItem_OwnerId(long userId, Sort sort);
 
-    List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long userId, LocalDateTime now, LocalDateTime now2);
+    List<Booking> findAllByBookerIdAndStartIsBeforeAndEndIsAfter(long userId, LocalDateTime now, LocalDateTime now2, Sort sort);
 
-    List<Booking> findAllByItem_OwnerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(long userId, LocalDateTime now, LocalDateTime now2);
+    List<Booking> findAllByItem_OwnerIdAndStartIsBeforeAndEndIsAfter(long userId, LocalDateTime now, LocalDateTime now2, Sort sort);
 
-    List<Booking> findAllByBookerIdAndEndIsBeforeOrderByStartDesc(long userId, LocalDateTime now);
+    List<Booking> findAllByBookerIdAndEndIsBefore(long userId, LocalDateTime now, Sort sort);
 
-    List<Booking> findAllByItem_OwnerIdAndEndIsBeforeOrderByStartDesc(long userId, LocalDateTime now);
+    List<Booking> findAllByItem_OwnerIdAndEndIsBefore(long userId, LocalDateTime now, Sort sort);
 
-    List<Booking> findAllByBookerIdAndStartIsAfterOrderByStartDesc(long userId, LocalDateTime now);
+    List<Booking> findAllByBookerIdAndStartIsAfter(long userId, LocalDateTime now, Sort sort);
 
-    List<Booking> findAllByItem_OwnerIdAndStartIsAfterOrderByStartDesc(long userId, LocalDateTime now);
+    List<Booking> findAllByItem_OwnerIdAndStartIsAfter(long userId, LocalDateTime now, Sort sort);
 
-    List<Booking> findAllByBookerIdAndStatusOrderByStartDesc(long userId, Status status);
+    List<Booking> findAllByBookerIdAndStatus(long userId, Status status, Sort sort);
 
-    List<Booking> findAllByItem_OwnerIdAndStatusOrderByStartDesc(long userId, Status status);
+    List<Booking> findAllByItem_OwnerIdAndStatus(long userId, Status status, Sort sort);
 
-    Booking findFirstByItem_IdAndStartBeforeAndStatusOrderByStartDesc(long itemId, LocalDateTime now, Status status);
+    Booking findFirstByItem_IdAndStartBeforeAndStatus(long itemId, LocalDateTime now, Status status, Sort sort);
 
-    Booking findFirstByItem_IdAndStartAfterAndStatusOrderByStartAsc(long itemId, LocalDateTime now, Status status);
+    Booking findFirstByItem_IdAndStartAfterAndStatus(long itemId, LocalDateTime now, Status status, Sort sort);
 
     Booking findFirstByItem_IdAndBooker_IdAndEndIsBeforeAndStatus(long itemId, long userId, LocalDateTime now, Status status);
 }
