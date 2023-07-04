@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.mappers;
 
 import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.user.dto.UserDto;

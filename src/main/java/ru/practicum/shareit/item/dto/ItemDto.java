@@ -2,19 +2,19 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import ru.practicum.shareit.booking.dto.BookingInItemForOwner;
 
-import javax.validation.constraints.Size;
+import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @Builder
 public class ItemDto {
     private Long id;
     private String name;
-    @Size(max = 50, message = "Длина описания должна быть до 50 символов")
     private String description;
     private Boolean available;
     private Long requestId;
+    private BookingInItemForOwner lastBooking;
+    private BookingInItemForOwner nextBooking;
+    private List<CommentDto> comments;
 }
