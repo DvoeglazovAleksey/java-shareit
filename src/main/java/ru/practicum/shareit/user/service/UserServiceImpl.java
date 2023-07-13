@@ -3,6 +3,7 @@ package ru.practicum.shareit.user.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.EmailException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mappers.UserMapper;
@@ -20,24 +21,27 @@ public class UserServiceImpl implements UserService {
     private final Valid valid;
 
     @Override
-    public List<UserDto> findAllUsersDto() {
-        return userRepository.findAll().stream().map(UserMapper::toUserDto).collect(Collectors.toList());
+    public List<UserDto> findAll() {
+        return userRepository.findAll().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public UserDto findUserById(long id) {
-        User user = valid.checkUser(id);
+    public UserDto findUserById(long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() ->
+                        new NotFoundException("Пользователь с id = %s не зарегестрирован", userId));
         return UserMapper.toUserDto(user);
     }
 
     @Override
-    public UserDto addUserDto(UserDto userDto) {
+    public UserDto addUser(UserDto userDto) {
         validUser(userDto);
         return UserMapper.toUserDto(userRepository.save(UserMapper.toUser(userDto)));
     }
 
     @Override
-    public UserDto updateUserDto(long id, UserDto userDto) {
+    public UserDto updateUser(long id, UserDto userDto) {
         User user = valid.checkUser(id);
         if (userDto.getName() != null) {
             if (userDto.getName().isBlank()) {
@@ -58,7 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUser(long id) {
+    public void delete(long id) {
         userRepository.deleteById(id);
     }
 
