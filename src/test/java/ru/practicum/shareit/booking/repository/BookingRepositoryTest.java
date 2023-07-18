@@ -132,8 +132,7 @@ class BookingRepositoryTest {
 
     @Test
     void findFirstByItem_IdAndStartBeforeAndStatus_thenReturnBooking() {
-        Booking actualBooking = repository.findFirstByItem_IdAndStartBeforeAndStatus(item.getId(), LocalDateTime.now().plusHours(3)
-                , status, SORT);
+        Booking actualBooking = repository.findFirstByItem_IdAndStartBeforeAndStatus(item.getId(), LocalDateTime.now().plusHours(3), status, SORT);
 
         assertNotNull(actualBooking);
         assertEquals(booking.getItem().getId(), actualBooking.getItem().getId());
@@ -141,8 +140,8 @@ class BookingRepositoryTest {
 
     @Test
     void findFirstByItem_IdAndStartAfterAndStatus_thenReturnBooking() {
-        Booking actualBooking = repository.findFirstByItem_IdAndStartAfterAndStatus(item.getId(), LocalDateTime.now().plusHours(1)
-                , status, SORT);
+        Booking actualBooking = repository.findFirstByItem_IdAndStartAfterAndStatus(item.getId(), LocalDateTime.now().plusHours(1),
+                status, SORT);
 
         assertNotNull(actualBooking);
         assertEquals(booking.getItem().getId(), actualBooking.getItem().getId());
@@ -151,8 +150,7 @@ class BookingRepositoryTest {
     @Test
     void findFirstByItem_IdAndBooker_IdAndEndIsBeforeAndStatus_thenReturnBooking() {
         Booking actualBooking = repository.findFirstByItem_IdAndBooker_IdAndEndIsBeforeAndStatus(item.getId(),
-                booker.getId(), LocalDateTime.now().plusHours(3)
-                , status);
+                booker.getId(), LocalDateTime.now().plusHours(3), status);
 
         assertNotNull(actualBooking);
         assertEquals(booking.getItem().getId(), actualBooking.getItem().getId());

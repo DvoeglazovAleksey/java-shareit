@@ -45,7 +45,7 @@ class ItemRequestServiceImplTest {
 
     private final ItemRequest itemRequest = new ItemRequest(1L, "Кусторез", requestor, null);
 
-    private final Sort SORT = Sort.by(Sort.Direction.DESC, "created");
+    private final Sort sort = Sort.by(Sort.Direction.DESC, "created");
 
     private final User owner = new User(2L, "Павел", "p@mail.com");
     private final Item item = new Item(1L, "Кусторез", "Бывалый", true, owner, itemRequest);
@@ -54,7 +54,7 @@ class ItemRequestServiceImplTest {
 
     private final int size = 30;
 
-    private final PageRequest page = PageRequest.of(from / size, size, SORT);
+    private final PageRequest page = PageRequest.of(from / size, size, sort);
 
     private final long userId = 1L;
 
