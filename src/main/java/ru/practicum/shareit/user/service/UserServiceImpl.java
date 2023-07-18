@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
                 throw new EmailException("E-mail не может быть пустым");
             }
             if (!user.getEmail().equals(userDto.getEmail()) && isEmailPresentInRepository(UserMapper.toUser(userDto))) {
-                throw new EmailException(userDto.getEmail());
+                throw new EmailException("E-mail уже испрользуется другим пользователем");
             }
             user.setEmail(userDto.getEmail());
         }

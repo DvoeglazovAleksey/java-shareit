@@ -49,7 +49,7 @@ class ValidTest {
     @Test
     void checkItem_thenReturnItem() {
         long itemId = 1L;
-        Item item = new Item(itemId, "Trimer", "last", true, new User(),null);
+        Item item = new Item(itemId, "Trimer", "last", true, new User(), null);
         when(itemRepository.findById(itemId)).thenReturn(Optional.of(item));
 
         Item result = valid.checkItem(itemId);

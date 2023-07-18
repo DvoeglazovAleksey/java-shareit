@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.dto.BookingInItemForOwner;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.service.BookingService;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mappers.CommentMapper;
@@ -27,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -65,7 +67,19 @@ class ItemServiceImplTest {
 
         verify(commentRepository, times(1)).findAllByItem_Id(itemId);
         assertEquals(actualItem.getDescription(), item.getDescription());
+    }
 
+    @Test
+    void getItemById_thenReturnItemForOwner() {
+        when(valid.checkItem(itemId)).thenReturn(item);
+        when(bookingService.getNextBooking(itemId)).thenReturn(new BookingInItemForOwner());
+        when(bookingService.getLastBooking(itemId)).thenReturn(new BookingInItemForOwner());
+        when(commentRepository.findAllByItem_Id(itemId)).thenReturn(Collections.emptyList());
+
+        ItemDto actualItem = service.getItemById(owner.getId(), itemId);
+
+        verify(commentRepository, times(1)).findAllByItem_Id(itemId);
+        assertEquals(actualItem.getDescription(), item.getDescription());
     }
 
     @Test
@@ -95,6 +109,15 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void getItemsByText_thenReturnEmptyList() {
+        String text = "";
+
+        List<ItemDto> actualList = service.getItemsByText(text, from, size);
+
+        assertEquals(actualList.size(), 0);
+    }
+
+    @Test
     void addItem_thenAddItem() {
         when(valid.checkUser(owner.getId())).thenReturn(owner);
         when(itemRepository.save(any())).thenReturn(item);
@@ -102,6 +125,27 @@ class ItemServiceImplTest {
         ItemDto actualItem = service.addItem(owner.getId(), ItemMapper.toItemDto(item));
 
         assertEquals(actualItem.getName(), item.getName());
+    }
+
+    @Test
+    void addItem_thenNotValidItemName() {
+        item.setName("");
+
+        assertThrows(ValidationException.class, () -> service.addItem(owner.getId(), ItemMapper.toItemDto(item)));
+    }
+
+    @Test
+    void addItem_thenNotValidItemDescription() {
+        item.setDescription(null);
+
+        assertThrows(ValidationException.class, () -> service.addItem(owner.getId(), ItemMapper.toItemDto(item)));
+    }
+
+    @Test
+    void addItem_thenNotValidIteAvailable() {
+        item.setAvailable(null);
+
+        assertThrows(ValidationException.class, () -> service.addItem(owner.getId(), ItemMapper.toItemDto(item)));
     }
 
     @Test
@@ -120,6 +164,18 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void addComment_thenNotValidOwner() {
+        Comment comment = new Comment(1L, "Понравился", user, item, LocalDateTime.now());
+        CommentDto commentDto = CommentMapper.toCommentDto(comment);
+        when(valid.checkUser(userId)).thenReturn(user);
+        when(valid.checkItem(itemId)).thenReturn(item);
+        when(bookingRepository.findFirstByItem_IdAndBooker_IdAndEndIsBeforeAndStatus(anyLong(),
+                anyLong(), any(), any())).thenReturn(null);
+
+        assertThrows(ValidationException.class, () -> service.addComment(userId, itemId, commentDto));
+    }
+
+    @Test
     void updateItem_thenUpdateItem() {
         when(valid.checkUser(anyLong())).thenReturn(user);
         when(valid.checkItem(itemId)).thenReturn(item);
@@ -130,5 +186,34 @@ class ItemServiceImplTest {
 
         verify(itemRepository, times(1)).save(item);
         assertEquals(actualItem.getDescription(), "Бывалый");
+    }
+
+    @Test
+    void updateItem_thenNotValidName() {
+        item.setName("");
+        when(valid.checkUser(anyLong())).thenReturn(user);
+        when(valid.checkItem(itemId)).thenReturn(item);
+        ItemDto itemDto = ItemMapper.toItemDto(item);
+
+        assertThrows(ValidationException.class, () -> service.updateItem(2L, itemId, itemDto));
+    }
+
+    @Test
+    void updateItem_thenNotValidDescription() {
+        item.setDescription("");
+        when(valid.checkUser(anyLong())).thenReturn(user);
+        when(valid.checkItem(itemId)).thenReturn(item);
+        ItemDto itemDto = ItemMapper.toItemDto(item);
+
+        assertThrows(ValidationException.class, () -> service.updateItem(2L, itemId, itemDto));
+    }
+
+    @Test
+    void updateItem_thenNotValidOwner() {
+        when(valid.checkUser(anyLong())).thenReturn(user);
+        when(valid.checkItem(itemId)).thenReturn(item);
+        ItemDto itemDto = ItemMapper.toItemDto(item);
+
+        assertThrows(ValidationException.class, () -> service.updateItem(userId, itemId, itemDto));
     }
 }

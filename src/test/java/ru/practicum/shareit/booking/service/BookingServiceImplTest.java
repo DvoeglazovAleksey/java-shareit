@@ -12,6 +12,7 @@ import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.IllegalStatusException;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
@@ -243,5 +244,42 @@ class BookingServiceImplTest {
         BookingDto actualBooking = service.update(ownerId, booking.getId(), false);
 
         assertEquals(actualBooking.getItem().getId(), item.getId());
+    }
+
+    @Test
+    void update_thenAlreadyApprovedOwner() {
+        when(valid.checkUser(anyLong())).thenReturn(owner);
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+
+        assertThrows(ValidationException.class, () -> service.update(ownerId, booking.getId(), true));
+    }
+
+    @Test
+    void update_thenApprovedOwner() {
+        booking.setStatus(Status.WAITING);
+        when(valid.checkUser(anyLong())).thenReturn(owner);
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+        when(bookingRepository.save(any())).thenReturn(booking);
+
+        BookingDto actualBooking = service.update(ownerId, booking.getId(), true);
+
+        assertEquals(actualBooking.getItem().getId(), item.getId());
+    }
+
+    @Test
+    void update_thenOwnerRejectBooking() {
+        booking.setStatus(Status.REJECTED);
+        when(valid.checkUser(anyLong())).thenReturn(owner);
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+
+        assertThrows(ValidationException.class, () -> service.update(ownerId, booking.getId(), false));
+    }
+
+    @Test
+    void update_thenUserNotValid() {
+        when(valid.checkUser(anyLong())).thenReturn(owner);
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+
+        assertThrows(NotFoundException.class, () -> service.update(1L, booking.getId(), false));
     }
 }
