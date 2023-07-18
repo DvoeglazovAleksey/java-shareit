@@ -60,7 +60,7 @@ class ItemControllerTest {
 
     @Test
     @SneakyThrows
-    void getItemsByUserId_thenReturneItem() {
+    void getItemsByUserId_thenReturnItem() {
         when(service.getItemsByOwnerId(userId, from, size)).thenReturn(List.of(itemDto));
 
         mvc.perform(get("/items")

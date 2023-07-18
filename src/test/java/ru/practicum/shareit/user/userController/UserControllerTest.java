@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.collection.IsCollectionWithSize.hasSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -83,6 +84,24 @@ public class UserControllerTest {
 
     @Test
     @SneakyThrows
+    void update_thenUpdateUser() {
+        long userId = 1L;
+        when(userService.updateUser(userId, userDto)).thenReturn(userDto);
+
+        mvc.perform(patch("/users/{id}", userId)
+                        .content(mapper.writeValueAsString(userDto))
+                        .header("X-Sharer-User-Id", 1)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(userDto.getName())))
+                .andExpect(jsonPath("$.email", is(userDto.getEmail())));
+
+        verify(userService).updateUser(anyLong(), any());
+    }
+    @Test
+    @SneakyThrows
     void update_thenBadRequest() {
         long userId = 1L;
         UserDto userToUpdate = new UserDto();
@@ -94,5 +113,16 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest());
 
         verify(userService, never()).updateUser(userId, userToUpdate);
+    }
+
+    @Test
+    @SneakyThrows
+    void delete_thenIsOk() {
+        long userId = 1L;
+
+        mvc.perform(delete("/users/{id}", userId))
+                .andExpect(status().isOk());
+
+        verify(userService).delete(userId);
     }
 }

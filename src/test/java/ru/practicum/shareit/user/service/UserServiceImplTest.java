@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.exception.EmailException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -91,7 +92,7 @@ class UserServiceImplTest {
     void addUser_thenNotValid() {
         UserDto notValidUserDto = new UserDto(0, null, null);
 
-        assertThrows(ValidationException.class,
+        assertThrows(EmailException.class,
                 () -> userService.addUser(notValidUserDto));
 
         verify(userRepository, never()).save(UserMapper.toUser(notValidUserDto));

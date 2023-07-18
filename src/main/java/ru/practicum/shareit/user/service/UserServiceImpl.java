@@ -51,7 +51,7 @@ public class UserServiceImpl implements UserService {
         }
         if (userDto.getEmail() != null) {
             if (userDto.getEmail().isBlank()) {
-                throw new ValidationException("E-mail не может быть пустым");
+                throw new EmailException("E-mail не может быть пустым");
             }
             if (!user.getEmail().equals(userDto.getEmail()) && isEmailPresentInRepository(UserMapper.toUser(userDto))) {
                 throw new EmailException(userDto.getEmail());
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
     private void validUser(UserDto userDto) {
         if (userDto.getEmail() == null) {
-            throw new ValidationException("Email null");
+            throw new EmailException("Email null");
         } else if (userDto.getName() == null) {
             throw new ValidationException("Name null");
         }

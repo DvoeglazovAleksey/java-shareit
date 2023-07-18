@@ -11,6 +11,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.IllegalStatusException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.user.model.User;
@@ -45,7 +46,17 @@ class BookingServiceImplTest {
     private final int size = 30;
 
     @Test
-    void findById() {
+    void findById_thenReturnBooking() {
+        long bookingId = 1L;
+        when(valid.checkUser(anyLong())).thenReturn(owner);
+        when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
+
+        assertThrows(NotFoundException.class,
+                () -> service.findById(bookingId, 3L));
+    }
+
+    @Test
+    void findById_thenReturnValidation() {
         long bookingId = 1L;
         when(valid.checkUser(ownerId)).thenReturn(owner);
         when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
