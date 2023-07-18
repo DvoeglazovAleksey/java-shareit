@@ -5,8 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoFromFrontend;
+import ru.practicum.shareit.booking.dto.BookingInItemForOwner;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.repository.BookingRepository;
@@ -45,6 +47,8 @@ class BookingServiceImplTest {
     private final Booking booking = new Booking(1L, start, end, item, booker, Status.APPROVED);
     private final int from = 0;
     private final int size = 30;
+    private final Sort sortDesc = Sort.by(Sort.Direction.DESC, "start");
+    private final Sort sortAsc = Sort.by(Sort.Direction.ASC, "start");
 
     @Test
     void findById_thenReturnBooking() {
@@ -236,6 +240,44 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void add_thenNotAvailableItem() {
+        item.setAvailable(false);
+        when(valid.checkItem(item.getId())).thenReturn(item);
+        BookingDtoFromFrontend bookingDtoFromFrontend = new BookingDtoFromFrontend(item.getId(),
+                start, end);
+
+        assertThrows(ValidationException.class, () -> service.add(3L, bookingDtoFromFrontend));
+    }
+
+    @Test
+    void add_thenNotValidDataEnd() {
+        LocalDateTime endNotValid = LocalDateTime.now();
+        when(valid.checkItem(item.getId())).thenReturn(item);
+        BookingDtoFromFrontend bookingDtoFromFrontend = new BookingDtoFromFrontend(item.getId(),
+                start, endNotValid);
+
+        assertThrows(ValidationException.class, () -> service.add(3L, bookingDtoFromFrontend));
+    }
+
+    @Test
+    void add_thenNotValidDataStart() {
+        when(valid.checkItem(item.getId())).thenReturn(item);
+        BookingDtoFromFrontend bookingDtoFromFrontend = new BookingDtoFromFrontend(item.getId(),
+                start, start);
+
+        assertThrows(ValidationException.class, () -> service.add(3L, bookingDtoFromFrontend));
+    }
+
+    @Test
+    void add_thenNotValidUser() {
+        when(valid.checkItem(item.getId())).thenReturn(item);
+        BookingDtoFromFrontend bookingDtoFromFrontend = new BookingDtoFromFrontend(item.getId(),
+                start, end);
+
+        assertThrows(NotFoundException.class, () -> service.add(2L, bookingDtoFromFrontend));
+    }
+
+    @Test
     void update_thenReturnUpdateBooking() {
         when(valid.checkUser(anyLong())).thenReturn(owner);
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
@@ -281,5 +323,23 @@ class BookingServiceImplTest {
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
 
         assertThrows(NotFoundException.class, () -> service.update(1L, booking.getId(), false));
+    }
+
+    @Test
+    void getLastBooking() {
+        when(bookingRepository.findFirstByItem_IdAndStartBeforeAndStatus(anyLong(), any(), any(), any())).thenReturn(booking);
+
+        BookingInItemForOwner reselt = service.getLastBooking(item.getId());
+
+        assertEquals(reselt.getBookerId(), booking.getBooker().getId());
+    }
+
+    @Test
+    void getNextBooking() {
+        when(bookingRepository.findFirstByItem_IdAndStartAfterAndStatus(anyLong(), any(), any(), any())).thenReturn(booking);
+
+        BookingInItemForOwner reselt = service.getNextBooking(item.getId());
+
+        assertEquals(reselt.getBookerId(), booking.getBooker().getId());
     }
 }

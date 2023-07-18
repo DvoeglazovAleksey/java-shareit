@@ -119,6 +119,8 @@ class ItemServiceImplTest {
 
     @Test
     void addItem_thenAddItem() {
+        ItemRequest itemRequest = new ItemRequest(1L, "Trimer", null, null);
+        item.setRequest(itemRequest);
         when(valid.checkUser(owner.getId())).thenReturn(owner);
         when(itemRepository.save(any())).thenReturn(item);
 

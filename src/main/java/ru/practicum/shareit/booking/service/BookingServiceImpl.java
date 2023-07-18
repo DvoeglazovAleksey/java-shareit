@@ -159,8 +159,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingInItemForOwner getLastBooking(long itemId) {
-        return BookingMapper.toBookingInItemForOwner(bookingRepository.findFirstByItem_IdAndStartBeforeAndStatus(itemId,
-                LocalDateTime.now(), Status.APPROVED, sortDesc));
+        Booking booking = bookingRepository.findFirstByItem_IdAndStartBeforeAndStatus(itemId,
+                LocalDateTime.now(), Status.APPROVED, sortDesc);
+        return BookingMapper.toBookingInItemForOwner(booking);
     }
 
     @Override
