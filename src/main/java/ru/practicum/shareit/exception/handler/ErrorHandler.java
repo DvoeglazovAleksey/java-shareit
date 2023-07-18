@@ -25,8 +25,7 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleEmailException(final EmailException e) {
-        return new ErrorResponse(
-                String.format("Пользователь с таким email \"%s\" уже существует.", e.getParameter()));
+        return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler

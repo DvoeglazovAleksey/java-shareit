@@ -16,6 +16,7 @@ import javax.persistence.TypedQuery;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Transactional
@@ -44,14 +45,21 @@ class UserServiceIT {
 
     @Test
     void updateUser_thenNotValidEmailUser() {
+
         UserDto userDto = makeUserDto("UserDto", "some@email.com");
         User user = new User(null, "User", "e@email.com");
         User user2 = new User(null, "User2", "some@email.com");
+        String message = String.format("Пользователь с email %s уже существует", userDto.getEmail());
         em.persist(user);
         em.persist(user2);
 
-        assertThrows(EmailException.class, () ->
-                service.updateUser(user.getId(), userDto));
+//        assertThrows(EmailException.class, () ->
+//                service.updateUser(user.getId(), userDto));
+        EmailException exception = assertThrows(
+                EmailException.class,
+                () -> service.updateUser(user.getId(), userDto)
+        );
+        assertEquals(message, exception.getMessage());
     }
 
 
