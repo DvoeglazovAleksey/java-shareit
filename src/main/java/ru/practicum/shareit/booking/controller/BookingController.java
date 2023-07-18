@@ -56,6 +56,6 @@ public class BookingController {
                                                         @RequestParam(defaultValue = "30") @Min(1) int size) {
         log.info("Поступил запрос @Get на эндпоинт: '/bookings/owner' для получения booking по вещам владельца" +
                 " с id = {}", userId);
-        return bookingService.findAllBookingsByItemsOwner(userId, state,from, size);
+        return bookingService.findAllBookingsByItemsOwner(userId, state, from, size);
     }
 }

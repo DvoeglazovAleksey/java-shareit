@@ -8,9 +8,9 @@ import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.mappers.ItemMapper;
 import ru.practicum.shareit.item.repository.ItemRepository;
-import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.ItemRequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.validation.Valid;
@@ -23,10 +23,11 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class ItemRequestServiceImpl implements ItemRequestService{
+public class ItemRequestServiceImpl implements ItemRequestService {
     private final Valid valid;
     private final ItemRequestRepository itemRequestRepository;
     private final ItemRepository itemRepository;
+
     @Override
     public ItemRequestDto add(long userId, ItemRequestDto itemRequestDto) {
         User requestor = valid.checkUser(userId);

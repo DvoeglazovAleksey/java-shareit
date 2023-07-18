@@ -1,4 +1,4 @@
-package ru.practicum.shareit.request;
+package ru.practicum.shareit.request.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +35,7 @@ public class ItemRequestController {
 
     @GetMapping("/{requestId}")
     public ItemRequestDto getById(@RequestHeader("X-Sharer-User-Id") long userId, @PathVariable long requestId) {
+        log.info("Поступил запрос @Get на эндпоинт: '/{requestsId}' для получения itemRequest от пользователя с id= {}", userId);
         return itemRequestService.getById(userId, requestId);
     }
 

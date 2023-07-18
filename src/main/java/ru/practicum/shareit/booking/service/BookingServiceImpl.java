@@ -49,7 +49,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> findAllBookingsByUserId(long userId, String state, int from, int size) {
         valid.checkUser(userId);
-        PageRequest page = PageRequest.of(from/size, size, sortDesc);
+        PageRequest page = PageRequest.of(from / size, size, sortDesc);
         List<Booking> bookings;
         switch (state) {
             case "ALL":

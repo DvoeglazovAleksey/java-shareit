@@ -32,7 +32,7 @@ public class ItemController {
                                           @RequestParam(defaultValue = "0") @Min(0) int from,
                                           @RequestParam(defaultValue = "30") @Min(1) int size) {
         log.info("Поступил запрос @Get на эндпоинт: '/items' для получения items от пользователя с id = {}", userId);
-        return itemService.getItemsByUserId(userId, from, size);
+        return itemService.getItemsByOwnerId(userId, from, size);
     }
 
     @GetMapping("/search")

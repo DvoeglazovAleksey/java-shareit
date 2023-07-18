@@ -48,7 +48,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsByUserId(long userId, int from, int size) {
+    public List<ItemDto> getItemsByOwnerId(long userId, int from, int size) {
         valid.checkUser(userId);
         PageRequest page = PageRequest.of(from, size);
         List<ItemDto> itemDto = itemRepository.findByOwnerId(userId, page).stream()

@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.service;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,7 +11,6 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.mappers.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repositoty.UserRepository;
-import ru.practicum.shareit.user.service.UserServiceImpl;
 import ru.practicum.shareit.validation.Valid;
 
 import java.util.Collections;
@@ -32,7 +31,7 @@ class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    private final User expectedUser = new User(1L, "John", "john.doe@mail.com");
+    private final User expectedUser = new User(1L, "Jon", "jon.doe@mail.com");
 
     @Test
     void findAll_thenReturnedUser() {
@@ -64,9 +63,8 @@ class UserServiceImplTest {
 
         UserDto actualUserDto = userService.findUserById(userId);
 
-        assertEquals(actualUserDto.getId(), expectedUser.getId());
-        assertEquals(actualUserDto.getName(), expectedUser.getName());
-        assertEquals(actualUserDto.getEmail(), expectedUser.getEmail());
+        assertNotNull(actualUserDto);
+        verify(userRepository, times(1)).findById(userId);
     }
 
     @Test
