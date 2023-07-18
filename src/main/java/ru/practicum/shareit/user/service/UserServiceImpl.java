@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
 
     private void validUser(UserDto userDto) {
         if (userDto.getEmail() == null) {
-            throw new EmailException("Email null");
+            throw new ValidationException("Email null");
         } else if (userDto.getName() == null) {
             throw new ValidationException("Name null");
         }
