@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.EmailException;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.repositoty.UserRepository;
@@ -22,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @SpringBootTest
-class UserServiceIT {
+class UserServiceTestIT {
 
     private final EntityManager em;
     private final UserService service;
@@ -45,7 +46,6 @@ class UserServiceIT {
 
     @Test
     void updateUser_thenNotValidEmailUser() {
-
         UserDto userDto = makeUserDto("UserDto", "some@email.com");
         User user = new User(null, "User", "e@email.com");
         User user2 = new User(null, "User2", "some@email.com");
@@ -53,12 +53,25 @@ class UserServiceIT {
         em.persist(user);
         em.persist(user2);
 
-//        assertThrows(EmailException.class, () ->
-//                service.updateUser(user.getId(), userDto));
         EmailException exception = assertThrows(
                 EmailException.class,
                 () -> service.updateUser(user.getId(), userDto)
         );
+
+        assertEquals(message, exception.getMessage());
+    }
+
+    @Test
+    void findById_thenNotFoundInBD() {
+        User user = new User(null, "User", "e@email.com");
+        em.persist(user);
+        String message = String.format("Пользователь с id = %s не зарегестрирован", 2);
+
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
+                () -> service.findUserById(2L)
+        );
+
         assertEquals(message, exception.getMessage());
     }
 

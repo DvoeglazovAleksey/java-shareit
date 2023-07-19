@@ -16,11 +16,11 @@ public class Valid {
 
     public User checkUser(long userId) {
         return userRepository.findById(userId).orElseThrow(() ->
-                new NotFoundException("Пользователь с id = %s не зарегестрирован", userId));
+                new NotFoundException(String.format("Пользователь с id = %s не зарегестрирован", userId)));
     }
 
     public Item checkItem(long itemId) {
         return itemRepository.findById(itemId).orElseThrow(() ->
-                new NotFoundException("Вещь с id = %s не зарегестрирована", itemId));
+                new NotFoundException(String.format("Вещь с id = %s не зарегестрирована", itemId)));
     }
 }

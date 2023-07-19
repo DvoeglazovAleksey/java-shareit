@@ -71,10 +71,14 @@ class UserServiceImplTest {
     @Test
     void findUserById_thenReturnedNotFound() {
         long userId = expectedUser.getId();
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        String error = String.format("Пользователь с id %d не найден", userId);
+        when(userRepository.findById(userId)).thenThrow(new NotFoundException(error));
 
-        assertThrows(NotFoundException.class,
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
                 () -> userService.findUserById(userId));
+
+        assertEquals(error, exception.getMessage());
     }
 
     @Test

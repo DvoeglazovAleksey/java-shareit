@@ -36,12 +36,12 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto findById(long bookingId, long userId) {
         valid.checkUser(userId);
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
-                new NotFoundException("Booking with id = %S not registered", bookingId));
+                new NotFoundException(String.format("Booking with id = %S not registered", bookingId)));
         long ownerId = booking.getItem().getOwner().getId();
         long bookerId = booking.getBooker().getId();
         if (userId != ownerId && userId != bookerId) {
             log.warn("Пользователь с id = {} не имеет прав просматривать бронированние", userId);
-            throw new NotFoundException("Пользователь с id = %S не имеет прав просматривать бронированние", userId);
+            throw new NotFoundException(String.format("Пользователь с id = %S не имеет прав просматривать бронированние", userId));
         }
         return BookingMapper.toBookingDto(booking);
     }
@@ -118,7 +118,7 @@ public class BookingServiceImpl implements BookingService {
         User booker = valid.checkUser(userId);
         if (userId == item.getOwner().getId()) {
             log.warn("Пользователь с id = {} владелец вещи и не может бронировать сам у себя", userId);
-            throw new NotFoundException("Пользователь с id = %s владелец вещи и не может бронировать сам у себя", userId);
+            throw new NotFoundException(String.format("Пользователь с id = %s владелец вещи и не может бронировать сам у себя", userId));
         }
         checkDate(bookingDtoFromFrontend);
         Booking booking = BookingMapper.toBooking(bookingDtoFromFrontend);
@@ -133,7 +133,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingDto update(long userId, long bookingId, boolean approved) {
         valid.checkUser(userId);
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
-                new NotFoundException("Booking with id = %S not registered", bookingId));
+                new NotFoundException(String.format("Booking with id = %S not registered", bookingId)));
         long ownerId = booking.getItem().getOwner().getId();
         if (userId == ownerId) {
             if (approved) {
@@ -152,7 +152,7 @@ public class BookingServiceImpl implements BookingService {
             }
         } else {
             log.warn("Пользователь с id = {} не имеет прав согласовывать бронированние", userId);
-            throw new NotFoundException("Пользователь с id = $S не имеет прав согласовывать бронированние", userId);
+            throw new NotFoundException(String.format("Пользователь с id = $S не имеет прав согласовывать бронированние", userId));
         }
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
