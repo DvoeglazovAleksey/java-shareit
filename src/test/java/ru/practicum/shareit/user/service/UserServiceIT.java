@@ -53,12 +53,11 @@ class UserServiceIT {
         em.persist(user);
         em.persist(user2);
 
-//        assertThrows(EmailException.class, () ->
-//                service.updateUser(user.getId(), userDto));
         EmailException exception = assertThrows(
                 EmailException.class,
                 () -> service.updateUser(user.getId(), userDto)
         );
+
         assertEquals(message, exception.getMessage());
     }
 
