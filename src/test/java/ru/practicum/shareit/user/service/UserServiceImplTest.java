@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.exception.EmailException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserDto;
@@ -70,10 +71,14 @@ class UserServiceImplTest {
     @Test
     void findUserById_thenReturnedNotFound() {
         long userId = expectedUser.getId();
-        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+        String error = String.format("Пользователь с id %d не найден", userId);
+        when(userRepository.findById(userId)).thenThrow(new NotFoundException(error));
 
-        assertThrows(NotFoundException.class,
+        NotFoundException exception = assertThrows(
+                NotFoundException.class,
                 () -> userService.findUserById(userId));
+
+        assertEquals(error, exception.getMessage());
     }
 
     @Test
@@ -124,7 +129,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void updateUser_thenNotValidUserDto() {
+    void updateUser_thenNotValidNameUserDto() {
         long userId = 1L;
         User oldUser = new User(1L, "User", "e@email.ru");
         User notValidUser = new User(1L, "", "new@email.ru");
@@ -132,6 +137,20 @@ class UserServiceImplTest {
         when(valid.checkUser(userId)).thenReturn(oldUser);
 
         assertThrows(ValidationException.class,
+                () -> userService.updateUser(userId, notValidUserDto));
+
+        verify(userRepository, never()).save(notValidUser);
+    }
+
+    @Test
+    void updateUser_thenNotValidEmailUserDto() {
+        long userId = 1L;
+        User oldUser = new User(1L, "User", "e@email.ru");
+        User notValidUser = new User(1L, "", "new@email.ru");
+        UserDto notValidUserDto = new UserDto(1L, "UserDto", "");
+        when(valid.checkUser(userId)).thenReturn(oldUser);
+
+        assertThrows(EmailException.class,
                 () -> userService.updateUser(userId, notValidUserDto));
 
         verify(userRepository, never()).save(notValidUser);

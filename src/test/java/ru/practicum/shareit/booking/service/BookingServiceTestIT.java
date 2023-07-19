@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @SpringBootTest
-class BookingServiceIT {
+class BookingServiceTestIT {
     private final EntityManager em;
     private final BookingService bookingService;
 

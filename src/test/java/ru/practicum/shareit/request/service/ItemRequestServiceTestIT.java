@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.notNullValue;
 @Transactional
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 @SpringBootTest
-class ItemRequestServiceIT {
+class ItemRequestServiceTestIT {
     private final EntityManager em;
     private final ItemRequestService itemRequestService;
 
