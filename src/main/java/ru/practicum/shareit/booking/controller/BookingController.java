@@ -2,18 +2,21 @@ package ru.practicum.shareit.booking.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoFromFrontend;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/bookings")
 @AllArgsConstructor
 @Slf4j
+@Validated
 public class BookingController {
     private final BookingService bookingService;
 
@@ -39,16 +42,20 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> findAllBookingsByUserId(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                    @RequestParam(defaultValue = "ALL") String state) {
+                                                    @RequestParam(defaultValue = "ALL") String state,
+                                                    @RequestParam(defaultValue = "0") @Min(0) int from,
+                                                    @RequestParam(defaultValue = "30") @Min(1) int size) {
         log.info("Поступил запрос @Get на эндпоинт: '/bookings/' для полуения bookings c параметром State = {} от пользователя с id = {}", state, userId);
-        return bookingService.findAllBookingsByUserId(userId, state);
+        return bookingService.findAllBookingsByUserId(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> findAllBookingsByItemsOwner(@RequestHeader("X-Sharer-User-Id") long userId,
-                                                        @RequestParam(defaultValue = "ALL") String state) {
+                                                        @RequestParam(defaultValue = "ALL") String state,
+                                                        @RequestParam(defaultValue = "0") @Min(0) int from,
+                                                        @RequestParam(defaultValue = "30") @Min(1) int size) {
         log.info("Поступил запрос @Get на эндпоинт: '/bookings/owner' для получения booking по вещам владельца" +
                 " с id = {}", userId);
-        return bookingService.findAllBookingsByItemsOwner(userId, state);
+        return bookingService.findAllBookingsByItemsOwner(userId, state, from, size);
     }
 }

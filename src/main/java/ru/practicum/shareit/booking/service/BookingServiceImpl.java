@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -28,8 +29,8 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final Valid valid;
-    private final Sort sortByStartDesc = Sort.by(Sort.Direction.DESC, "start");
-    private final Sort sortByStartAsc = Sort.by(Sort.Direction.ASC, "start");
+    private final Sort sortDesc = Sort.by(Sort.Direction.DESC, "start");
+    private final Sort sortAsc = Sort.by(Sort.Direction.ASC, "start");
 
     @Override
     public BookingDto findById(long bookingId, long userId) {
@@ -46,27 +47,28 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findAllBookingsByUserId(long userId, String state) {
+    public List<BookingDto> findAllBookingsByUserId(long userId, String state, int from, int size) {
         valid.checkUser(userId);
+        PageRequest page = PageRequest.of(from / size, size, sortDesc);
         List<Booking> bookings;
         switch (state) {
             case "ALL":
-                bookings = bookingRepository.findAllByBookerId(userId, sortByStartDesc);
+                bookings = bookingRepository.findAllByBookerId(userId, page);
                 break;
             case "CURRENT":
-                bookings = bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(), LocalDateTime.now(), sortByStartDesc);
+                bookings = bookingRepository.findAllByBookerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(), LocalDateTime.now(), page);
                 break;
             case "PAST":
-                bookings = bookingRepository.findAllByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), sortByStartDesc);
+                bookings = bookingRepository.findAllByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), page);
                 break;
             case "FUTURE":
-                bookings = bookingRepository.findAllByBookerIdAndStartIsAfter(userId, LocalDateTime.now(), sortByStartDesc);
+                bookings = bookingRepository.findAllByBookerIdAndStartIsAfter(userId, LocalDateTime.now(), page);
                 break;
             case "WAITING":
-                bookings = bookingRepository.findAllByBookerIdAndStatus(userId, Status.WAITING, sortByStartDesc);
+                bookings = bookingRepository.findAllByBookerIdAndStatus(userId, Status.WAITING, page);
                 break;
             case "REJECTED":
-                bookings = bookingRepository.findAllByBookerIdAndStatus(userId, Status.REJECTED, sortByStartDesc);
+                bookings = bookingRepository.findAllByBookerIdAndStatus(userId, Status.REJECTED, page);
                 break;
             default:
                 log.warn("Unknown state: UNSUPPORTED_STATUS");
@@ -76,27 +78,28 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> findAllBookingsByItemsOwner(long userId, String state) {
+    public List<BookingDto> findAllBookingsByItemsOwner(long userId, String state, int from, int size) {
         valid.checkUser(userId);
+        PageRequest page = PageRequest.of(from, size, sortDesc);
         List<Booking> bookings;
         switch (state) {
             case "ALL":
-                bookings = bookingRepository.findAllByItem_OwnerId(userId, sortByStartDesc);
+                bookings = bookingRepository.findAllByItem_OwnerId(userId, page);
                 break;
             case "CURRENT":
-                bookings = bookingRepository.findAllByItem_OwnerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(), LocalDateTime.now(), sortByStartDesc);
+                bookings = bookingRepository.findAllByItem_OwnerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(), LocalDateTime.now(), page);
                 break;
             case "PAST":
-                bookings = bookingRepository.findAllByItem_OwnerIdAndEndIsBefore(userId, LocalDateTime.now(), sortByStartDesc);
+                bookings = bookingRepository.findAllByItem_OwnerIdAndEndIsBefore(userId, LocalDateTime.now(), page);
                 break;
             case "FUTURE":
-                bookings = bookingRepository.findAllByItem_OwnerIdAndStartIsAfter(userId, LocalDateTime.now(), sortByStartDesc);
+                bookings = bookingRepository.findAllByItem_OwnerIdAndStartIsAfter(userId, LocalDateTime.now(), page);
                 break;
             case "WAITING":
-                bookings = bookingRepository.findAllByItem_OwnerIdAndStatus(userId, Status.WAITING, sortByStartDesc);
+                bookings = bookingRepository.findAllByItem_OwnerIdAndStatus(userId, Status.WAITING, page);
                 break;
             case "REJECTED":
-                bookings = bookingRepository.findAllByItem_OwnerIdAndStatus(userId, Status.REJECTED, sortByStartDesc);
+                bookings = bookingRepository.findAllByItem_OwnerIdAndStatus(userId, Status.REJECTED, page);
                 break;
             default:
                 log.warn("Unknown state: UNSUPPORTED_STATUS");
@@ -156,14 +159,15 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingInItemForOwner getLastBooking(long itemId) {
-        return BookingMapper.toBookingInItemForOwner(bookingRepository.findFirstByItem_IdAndStartBeforeAndStatus(itemId,
-                LocalDateTime.now(), Status.APPROVED, sortByStartDesc));
+        Booking booking = bookingRepository.findFirstByItem_IdAndStartBeforeAndStatus(itemId,
+                LocalDateTime.now(), Status.APPROVED, sortDesc);
+        return BookingMapper.toBookingInItemForOwner(booking);
     }
 
     @Override
     public BookingInItemForOwner getNextBooking(Long itemId) {
         return BookingMapper.toBookingInItemForOwner(bookingRepository.findFirstByItem_IdAndStartAfterAndStatus(itemId,
-                LocalDateTime.now(), Status.APPROVED, sortByStartAsc));
+                LocalDateTime.now(), Status.APPROVED, sortAsc));
     }
 
     private void checkDate(BookingDtoFromFrontend bookingDtoFromFrontend) {

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -47,9 +48,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsByUserId(long userId) {
+    public List<ItemDto> getItemsByOwnerId(long userId, int from, int size) {
         valid.checkUser(userId);
-        List<ItemDto> itemDto = itemRepository.findByOwnerId(userId).stream()
+        PageRequest page = PageRequest.of(from, size);
+        List<ItemDto> itemDto = itemRepository.findByOwnerId(userId, page).stream()
                 .map(ItemMapper::toItemDtoForOwner).collect(Collectors.toList());
         for (ItemDto item : itemDto) {
             item.setLastBooking(bookingService.getLastBooking(item.getId()));
@@ -60,11 +62,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> getItemsByText(String text) {
+    public List<ItemDto> getItemsByText(String text, int from, int size) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        List<Item> items = itemRepository.getItemsByText(text.toLowerCase());
+        PageRequest page = PageRequest.of(from, size);
+        List<Item> items = itemRepository.getItemsByText(text.toLowerCase(), page);
         return items.stream().map(ItemMapper::toItemDto).collect(Collectors.toList());
     }
 
