@@ -102,21 +102,6 @@ public class UserControllerTest {
 
     @Test
     @SneakyThrows
-    void update_thenBadRequest() {
-        long userId = 1L;
-        UserDto userToUpdate = new UserDto();
-        userToUpdate.setEmail("notValid");
-
-        mvc.perform(patch("/users/{id}", userId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(userToUpdate)))
-                .andExpect(status().isBadRequest());
-
-        verify(userService, never()).updateUser(userId, userToUpdate);
-    }
-
-    @Test
-    @SneakyThrows
     void delete_thenIsOk() {
         long userId = 1L;
 

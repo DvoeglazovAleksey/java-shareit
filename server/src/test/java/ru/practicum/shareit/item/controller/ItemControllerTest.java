@@ -64,7 +64,10 @@ class ItemControllerTest {
         when(service.getItemsByOwnerId(userId, from, size)).thenReturn(List.of(itemDto));
 
         mvc.perform(get("/items")
-                        .header("X-Sharer-User-Id", 1))
+                        .header("X-Sharer-User-Id", 1)
+                        .param("text", "chainsaw")
+                        .param("from", "0")
+                        .param("size", "30"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$.[0].id", is(itemDto.getId()), Long.class))

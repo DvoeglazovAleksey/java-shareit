@@ -50,7 +50,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> getItemsByOwnerId(long userId, int from, int size) {
         valid.checkUser(userId);
-        PageRequest page = PageRequest.of(from, size);
+        PageRequest page = PageRequest.of(from / size, size);
         List<ItemDto> itemDto = itemRepository.findByOwnerId(userId, page).stream()
                 .map(ItemMapper::toItemDtoForOwner).collect(Collectors.toList());
         for (ItemDto item : itemDto) {

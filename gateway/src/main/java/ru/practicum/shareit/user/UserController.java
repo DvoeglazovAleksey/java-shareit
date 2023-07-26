@@ -34,7 +34,7 @@ public class UserController {
 
     @PatchMapping(value = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> update(@Valid @RequestBody UserDto userDto,
-                                        @PathVariable long id) {
+                                         @PathVariable long id) {
         return userClient.patchUser(id, userDto);
     }
 
