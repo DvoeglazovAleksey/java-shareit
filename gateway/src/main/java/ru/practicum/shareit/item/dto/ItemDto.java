@@ -9,13 +9,9 @@ import javax.validation.constraints.Size;
 @Builder
 public class ItemDto {
     private Long id;
-
     private String name;
-
     @Size(max = 250)
     private String description;
-
     private Boolean available;
-
     private Long requestId;
 }
