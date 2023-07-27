@@ -21,6 +21,7 @@ import ru.practicum.shareit.validation.Valid;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,6 +53,7 @@ public class ItemServiceImpl implements ItemService {
         valid.checkUser(userId);
         PageRequest page = PageRequest.of(from / size, size);
         List<ItemDto> itemDto = itemRepository.findByOwnerId(userId, page).stream()
+                .sorted(Comparator.comparing(Item::getId))
                 .map(ItemMapper::toItemDtoForOwner).collect(Collectors.toList());
         for (ItemDto item : itemDto) {
             item.setLastBooking(bookingService.getLastBooking(item.getId()));
@@ -98,9 +100,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     private void validItemAndUserInAddItem(ItemDto itemDto) {
-        if (itemDto.getName().isEmpty()) {
+        if (itemDto.getName().isBlank()) {
             throw new ValidationException("У вещи не может быть пустым название");
-        } else if (itemDto.getDescription() == null) {
+        } else if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()) {
             throw new ValidationException("У вещи не может быть пустым описание");
         } else if (itemDto.getAvailable() == null) {
             throw new ValidationException("У вещи не установлен статус доступности");
